@@ -10,12 +10,23 @@ app.use(cors());
 app.use(express.json());
 
 // Initialize MongoDB client
+// const client = new MongoClient(process.env.DB_URI, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   },
+// });
 const client = new MongoClient(process.env.DB_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
   },
+  connectTimeoutMS: 60000, // Increase connection timeout (60s)
+  socketTimeoutMS: 60000, // Increase socket timeout (60s)
+  maxPoolSize: 50, // Increase the connection pool size
+  minPoolSize: 10, // Maintain some connections always open
 });
 
 async function run() {
@@ -101,6 +112,7 @@ async function run() {
           message: 'Tasks fetched successfully',
           data: result,
         });
+        console.log(result, 'success');
       } catch (error) {
         res.status(500).send({
           success: false,
@@ -246,13 +258,11 @@ async function run() {
           _id: new ObjectId(id),
         });
 
-        res
-          .status(200)
-          .json({
-            success: true,
-            message: 'Task updated successfully',
-            data: updatedTask,
-          });
+        res.status(200).json({
+          success: true,
+          message: 'Task updated successfully',
+          data: updatedTask,
+        });
       } catch (err) {
         console.error('Update Error:', err);
         res
