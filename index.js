@@ -206,18 +206,55 @@ async function run() {
 
     app.put('/tasks/:id', async (req, res) => {
       const { id } = req.params;
-      const { category, order } = req.body;
-      console.log(category, 'category');
-      console.log(order, 'order');
-      //   console.log(category, order, 'category, order');
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ success: false, message: 'Invalid ID' });
+      }
+
+      const { title, description, category, orderid, columnId, timestamp } =
+        req.body;
+
+      if (
+        !title ||
+        !description ||
+        !category ||
+        !orderid ||
+        !columnId ||
+        !timestamp
+      ) {
+        return res
+          .status(400)
+          .json({ success: false, message: 'Missing required fields' });
+      }
+
       try {
-        const task = await tasksCollection.findByIdAndUpdate(
-          id,
-          { category, order },
-          { new: true }
+        const result = await tasksCollection.updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              title,
+              description,
+              category,
+              orderid,
+              columnId,
+              id,
+              timestamp,
+            },
+          }
         );
-        res.status(200).json({ success: true, data: task });
+
+        const updatedTask = await tasksCollection.findOne({
+          _id: new ObjectId(id),
+        });
+
+        res
+          .status(200)
+          .json({
+            success: true,
+            message: 'Task updated successfully',
+            data: updatedTask,
+          });
       } catch (err) {
+        console.error('Update Error:', err);
         res
           .status(500)
           .json({ success: false, message: 'Failed to update task' });
