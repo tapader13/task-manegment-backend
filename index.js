@@ -75,6 +75,22 @@ async function run() {
         });
       }
     });
+    app.get('/tasks', async (req, res) => {
+      try {
+        const result = await tasksCollection.find({}).toArray();
+        res.status(200).send({
+          success: true,
+          message: 'Tasks fetched successfully',
+          data: result,
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: 'Failed to fetch tasks',
+          error: error.message,
+        });
+      }
+    });
   } finally {
     // await client.close();
   }
