@@ -60,14 +60,22 @@ async function run() {
       try {
         const task = req.body;
         console.log(task, '1');
-        const findTasks = await tasksCollection.find({}).toArray();
+
+        const maxTask = await tasksCollection
+          .find({})
+          .sort({ id: -1 })
+          .limit(1)
+          .toArray();
+
+        const newId = maxTask.length > 0 ? maxTask[0].id + 1 : 1;
 
         const result = await tasksCollection.insertOne({
           ...task,
-          orderid: findTasks.length + 1,
-          id: findTasks.length + 1,
+          orderid: newId,
+          id: newId,
         });
         console.log(result);
+
         res.status(201).send({
           success: true,
           message: 'Task created successfully',
@@ -81,6 +89,7 @@ async function run() {
         });
       }
     });
+
     app.get('/tasks', async (req, res) => {
       try {
         const result = await tasksCollection
