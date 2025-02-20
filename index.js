@@ -22,9 +22,39 @@ async function run() {
   try {
     await client.connect();
     await client.db('admin').command({ ping: 1 });
+
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
     );
+    const dadDB = client.db('dadDB');
+    const usersCollection = dadDB.collection('users');
+    app.post('/users', async (req, res) => {
+      try {
+        const user = req.body;
+        console.log(user);
+        const findUser = await usersCollection.findOne({ email: user.email });
+        if (findUser) {
+          return res.status(400).send({
+            success: false,
+            message: 'User login successfully',
+            data: findUser,
+          });
+        }
+        const result = await usersCollection.insertOne(user);
+        console.log(result);
+        res.status(201).send({
+          success: true,
+          message: 'User created successfully',
+          data: result,
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: 'Failed to create user',
+          error: error.message,
+        });
+      }
+    });
   } finally {
     // await client.close();
   }
