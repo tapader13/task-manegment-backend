@@ -28,10 +28,11 @@ async function run() {
     );
     const dadDB = client.db('dadDB');
     const usersCollection = dadDB.collection('users');
+    const tasksCollection = dadDB.collection('tasks');
     app.post('/users', async (req, res) => {
       try {
         const user = req.body;
-        console.log(user);
+        console.log(user, '1');
         const findUser = await usersCollection.findOne({ email: user.email });
         if (findUser) {
           return res.status(400).send({
@@ -51,6 +52,25 @@ async function run() {
         res.status(500).send({
           success: false,
           message: 'Failed to create user',
+          error: error.message,
+        });
+      }
+    });
+    app.post('/tasks', async (req, res) => {
+      try {
+        const task = req.body;
+        console.log(task, '1');
+        const result = await tasksCollection.insertOne(task);
+        console.log(result);
+        res.status(201).send({
+          success: true,
+          message: 'Task created successfully',
+          data: result,
+        });
+      } catch (error) {
+        res.status(500).send({
+          success: false,
+          message: 'Failed to create task',
           error: error.message,
         });
       }
