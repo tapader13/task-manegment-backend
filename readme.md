@@ -6,7 +6,7 @@ This is the backend service for the Task Management Application. It provides RES
 
 ## Live API Link
 
-[https://drag-drop-server-amber.vercel.app/]
+[https://task-manegment-backend.onrender.com/]
 
 ## Technologies Used
 
