@@ -144,6 +144,56 @@ async function run() {
         });
       }
     });
+    app.delete('/tasks/:id', async (req, res) => {
+      const { id } = req.params;
+      try {
+        const taskToDelete = await tasksCollection.findOne({
+          _id: new ObjectId(id),
+        });
+
+        if (!taskToDelete) {
+          return res.status(404).send({
+            success: false,
+            message: 'Task not found',
+          });
+        }
+
+        const result = await tasksCollection.deleteOne({
+          _id: new ObjectId(id),
+        });
+
+        if (result.deletedCount === 0) {
+          return res.status(404).send({
+            success: false,
+            message: 'Failed to delete task',
+          });
+        }
+
+        const tasks = await tasksCollection
+          .find({})
+          .sort({ orderid: 1 })
+          .toArray();
+
+        if (taskToDelete.orderid !== tasks[tasks.length - 1]?.orderid) {
+          await tasksCollection.updateMany(
+            { orderid: { $gt: taskToDelete.orderid } },
+            { $inc: { orderid: -1 } }
+          );
+        }
+
+        res.status(200).send({
+          success: true,
+          message: 'Task deleted successfully',
+        });
+      } catch (error) {
+        console.error('Error deleting task:', error);
+        res.status(500).send({
+          success: false,
+          message: 'Failed to delete task',
+          error: error.message,
+        });
+      }
+    });
 
     app.put('/tasks/:id', async (req, res) => {
       const { id } = req.params;
