@@ -23,8 +23,8 @@ const client = new MongoClient(process.env.DB_URI, {
     strict: true,
     deprecationErrors: true,
   },
-  connectTimeoutMS: 60000, // Increase connection timeout (60s)
-  socketTimeoutMS: 60000, // Increase socket timeout (60s)
+  connectTimeoutMS: 60000,
+  socketTimeoutMS: 60000,
   maxPoolSize: 50, // Increase the connection pool size
   minPoolSize: 10, // Maintain some connections always open
 });
@@ -46,8 +46,8 @@ async function run() {
         console.log(user, '1');
         const findUser = await usersCollection.findOne({ email: user.email });
         if (findUser) {
-          return res.status(400).send({
-            success: false,
+          return res.status(200).send({
+            success: true,
             message: 'User login successfully',
             data: findUser,
           });
@@ -225,14 +225,7 @@ async function run() {
       const { title, description, category, orderid, columnId, timestamp } =
         req.body;
 
-      if (
-        !title ||
-        !description ||
-        !category ||
-        !orderid ||
-        !columnId ||
-        !timestamp
-      ) {
+      if (!title || !category || !orderid || !columnId || !timestamp) {
         return res
           .status(400)
           .json({ success: false, message: 'Missing required fields' });

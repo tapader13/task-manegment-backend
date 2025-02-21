@@ -42,7 +42,7 @@ Make sure you have the following installed:
 1. Clone the repository:
 
    ```sh
-   git clone [https://github.com/tapader13/task-manegment-backend]
+   git clone https://github.com/tapader13/task-manegment-backend
    cd backend
    ```
 
