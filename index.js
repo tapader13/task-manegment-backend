@@ -222,10 +222,24 @@ async function run() {
         return res.status(400).json({ success: false, message: 'Invalid ID' });
       }
 
-      const { title, description, category, orderid, columnId, timestamp } =
-        req.body;
+      const {
+        title,
+        description,
+        userEmail,
+        category,
+        orderid,
+        columnId,
+        timestamp,
+      } = req.body;
 
-      if (!title || !category || !orderid || !columnId || !timestamp) {
+      if (
+        !title ||
+        !category ||
+        !userEmail ||
+        !orderid ||
+        !columnId ||
+        !timestamp
+      ) {
         return res
           .status(400)
           .json({ success: false, message: 'Missing required fields' });
@@ -242,6 +256,7 @@ async function run() {
               orderid,
               columnId,
               id,
+              userEmail,
               timestamp,
             },
           }
