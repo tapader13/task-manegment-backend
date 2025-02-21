@@ -9,14 +9,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Initialize MongoDB client
-// const client = new MongoClient(process.env.DB_URI, {
-//   serverApi: {
-//     version: ServerApiVersion.v1,
-//     strict: true,
-//     deprecationErrors: true,
-//   },
-// });
 const client = new MongoClient(process.env.DB_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -292,13 +284,11 @@ async function run() {
             .status(404)
             .json({ success: false, message: 'Task not found' });
         }
-        res
-          .status(200)
-          .json({
-            success: true,
-            message: 'Task fetched successfully',
-            data: task,
-          });
+        res.status(200).json({
+          success: true,
+          message: 'Task fetched successfully',
+          data: task,
+        });
       } catch (err) {
         console.error('Fetch Error:', err);
         res
