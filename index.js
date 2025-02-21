@@ -278,6 +278,34 @@ async function run() {
           .json({ success: false, message: 'Failed to update task' });
       }
     });
+    app.get('/tasks/:id', async (req, res) => {
+      const { id } = req.params;
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ success: false, message: 'Invalid ID' });
+      }
+
+      try {
+        const task = await tasksCollection.findOne({ _id: new ObjectId(id) });
+
+        if (!task) {
+          return res
+            .status(404)
+            .json({ success: false, message: 'Task not found' });
+        }
+        res
+          .status(200)
+          .json({
+            success: true,
+            message: 'Task fetched successfully',
+            data: task,
+          });
+      } catch (err) {
+        console.error('Fetch Error:', err);
+        res
+          .status(500)
+          .json({ success: false, message: 'Failed to fetch task' });
+      }
+    });
   } finally {
     // await client.close();
   }
